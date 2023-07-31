@@ -15,28 +15,26 @@ export class BoardController {
 
   @Get()
   findAll() {
-    return 'find All';
+    return this.boardService.findAll();
   }
 
   @Get(':id')
   find(@Param('id') id: number) {
-    return `find ${id}`;
+    return this.boardService.find(id);
   }
 
   @Post()
   create(@Body() body: any) {
-    console.log(body);
-    return 'create';
+    return this.boardService.create(body);
   }
 
   @Put(':id')
   update(@Param('id') id: number, @Body() body: any) {
-    console.log(id, body);
-    return 'update';
+    return this.boardService.update(id, body);
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return `remove ${id}`;
+    return this.boardService.remove(id);
   }
 }
