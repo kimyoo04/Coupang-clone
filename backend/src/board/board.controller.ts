@@ -20,7 +20,7 @@ export class BoardController {
 
   @Get(':id')
   find(@Param('id') id: number) {
-    return this.boardService.find(id);
+    return this.boardService.find(Number(id));
   }
 
   @Post()
@@ -30,11 +30,11 @@ export class BoardController {
 
   @Put(':id')
   update(@Param('id') id: number, @Body() body: any) {
-    return this.boardService.update(id, body);
+    return this.boardService.update(Number(id), body);
   }
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.boardService.remove(id);
+    return this.boardService.remove(Number(id));
   }
 }

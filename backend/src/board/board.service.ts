@@ -2,25 +2,78 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BoardService {
+  private boards = [
+    {
+      id: 1,
+      title: 'title1',
+      content: 'content1',
+    },
+    {
+      id: 2,
+      title: 'title2',
+      content: 'content2',
+    },
+    {
+      id: 3,
+      title: 'title3',
+      content: 'content3',
+    },
+  ];
+
   findAll() {
-    return 'find All';
+    return this.boards;
   }
 
   find(id: number) {
-    return `find ${id}`;
+    const board = this.getOneBoard(id);
+
+    if (!board) return 'not found';
+    return board;
   }
 
   create(body: any) {
-    console.log(body);
-    return 'create';
+    const newBoard = {
+      id: this.getNextId(),
+      ...body,
+    };
+    this.boards.push(newBoard);
+    return newBoard;
   }
 
   update(id: number, body: any) {
-    console.log(id, body);
-    return 'update';
+    const index = this.getBoardIndex(id);
+
+    if (index === -1) return 'not found';
+
+    this.boards[index] = {
+      ...this.boards[index],
+      ...body,
+    };
+
+    return this.boards[index];
   }
 
   remove(id: number) {
-    return `remove ${id}`;
+    const index = this.getBoardIndex(id);
+
+    if (index === -1) return 'not found';
+    else this.boards.splice(index, 1);
+
+    return `remove board - ${id}`;
+  }
+
+  // 다음 id 구하기
+  getNextId() {
+    return this.boards.length + 1;
+  }
+
+  // id로 게시글 인덱스 찾기
+  getBoardIndex(id: number) {
+    return this.boards.findIndex((board) => board.id === id);
+  }
+
+  // id로 게시글 찾기
+  getOneBoard(id: number) {
+    return this.boards.find((board) => board.id === id);
   }
 }
