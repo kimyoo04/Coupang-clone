@@ -1,3 +1,9 @@
+###
+
+GET http://localhost:9000
+
+###
+
 GET http://localhost:9000/board/exception
 
 ###
@@ -33,4 +39,3 @@ content-Type: application/json
 
 DELETE http://localhost:9000/board/1
 
-###
