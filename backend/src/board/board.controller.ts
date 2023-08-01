@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -18,6 +20,11 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 @ApiTags('Board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
+
+  @Get('exception')
+  exception() {
+    throw new HttpException('Not Found Exception', HttpStatus.NOT_FOUND);
+  }
 
   @Get()
   findAll() {
