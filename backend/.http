@@ -1,0 +1,41 @@
+###
+
+GET http://localhost:9000
+
+###
+
+GET http://localhost:9000/board/exception
+
+###
+
+GET http://localhost:9000/board
+
+###
+
+GET http://localhost:9000/board/1
+
+###
+
+POST http://localhost:9000/board
+content-Type: application/json
+
+{
+    "title": "test title",
+    "content": "test content"
+}
+
+
+###
+
+PUT http://localhost:9000/board/1
+content-Type: application/json
+
+{
+    "title": "modify title",
+    "content": "modify content"
+}
+
+###
+
+DELETE http://localhost:9000/board/1
+
