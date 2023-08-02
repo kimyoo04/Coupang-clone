@@ -8,7 +8,7 @@ import {
 import { Board } from './board.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity({ name: 'user' })
 @Unique(['email']) // 이메일은 중복되지 않아야 합니다.
 export class User {
   // @PrimaryColumn('uuid', { default: uuidv4() }) // 기본값으로 UUID를 생성

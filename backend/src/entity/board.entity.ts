@@ -10,7 +10,7 @@ import {
 import { User } from './user.entity'; // User 엔티티를 import
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
+@Entity({ name: 'board' })
 export class Board {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
