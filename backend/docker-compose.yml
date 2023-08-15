@@ -1,24 +1,24 @@
 services:
-  nestjs:
-    container_name: nestjs
-    build:
-      dockerfile: Dockerfile
-      context: ./
-      # develop stage만 진행
-      target: development
-    volumes:
-      - ./:/usr/src/nestjs
-    env_file:
-      - .env
-    #development stage만 실행
-    command: yarn run start:dev
-    ports:
-      - 9000:9000
-    depends_on:
-      # - redis
-      - postgres
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+  # nestjs:
+  #   container_name: nestjs
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./
+  #     # develop stage만 진행
+  #     target: development
+  #   volumes:
+  #     - ./:/usr/src/nestjs
+  #   env_file:
+  #     - .env
+  #   #development stage만 실행
+  #   command: yarn run start:dev
+  #   ports:
+  #     - 9000:9000
+  #   depends_on:
+  #     # - redis
+  #     - postgres
+  #   environment:
+  #     DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
 
   # redis:
   #   container_name: redis
@@ -37,7 +37,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

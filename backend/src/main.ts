@@ -15,8 +15,8 @@ async function bootstrap() {
     .addTag('Board')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/swagger', app, document);
+  SwaggerModule.setup('docs', app, document);
 
-  await app.listen(9000);
+  await app.listen(8000);
 }
 bootstrap();
