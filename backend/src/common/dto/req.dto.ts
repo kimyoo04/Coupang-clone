@@ -7,9 +7,4 @@ export class PageReqDto {
   @Transform(({ value }) => Number(value))
   @IsInt()
   page?: number = 1;
-
-  @ApiPropertyOptional({ description: '페이지당 데이터 갯수. Default = 30' })
-  @Transform(({ value }) => Number(value))
-  @IsInt()
-  size?: number = 30;
 }

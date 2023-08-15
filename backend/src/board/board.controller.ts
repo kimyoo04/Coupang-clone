@@ -29,7 +29,7 @@ export class BoardController {
   }
 
   @Get()
-  findAll(@Query() { page, size }: PageReqDto) {
+  findAll(@Query() { page }: PageReqDto) {
     return this.boardService.findAll();
   }
 
