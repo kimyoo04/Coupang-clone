@@ -12,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'board' })
 export class Board {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @ApiProperty({ description: '제목' })

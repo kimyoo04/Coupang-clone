@@ -12,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 @Unique(['email']) // 이메일은 중복되지 않아야 합니다.
 export class User {
   // @PrimaryColumn('uuid', { default: uuidv4() }) // 기본값으로 UUID를 생성
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @ApiProperty({ description: '이름' })
@@ -20,7 +20,7 @@ export class User {
   name: string;
 
   @ApiProperty({ description: '이메일' })
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @ApiProperty({ description: '비밀번호' })
