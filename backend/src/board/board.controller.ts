@@ -6,15 +6,17 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { PageReqDto } from '@/common/dto/req.dto';
+import { FindBoardDto } from './dto/find-board.dto';
 
 @Controller('board')
 @ApiTags('Board')
@@ -27,12 +29,12 @@ export class BoardController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query() { page, size }: PageReqDto) {
     return this.boardService.findAll();
   }
 
   @Get(':id')
-  find(@Param('id', ParseIntPipe) id: number) {
+  find(@Param('id') { id }: FindBoardDto) {
     return this.boardService.find(id);
   }
 
@@ -43,14 +45,14 @@ export class BoardController {
 
   @Put(':id')
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') { id }: FindBoardDto,
     @Body(new ValidationPipe()) body: UpdateBoardDto,
   ) {
     return this.boardService.update(id, body);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') { id }: FindBoardDto) {
     return this.boardService.remove(id);
   }
 }

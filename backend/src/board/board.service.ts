@@ -14,17 +14,17 @@ export class BoardService {
 
   private boards = [
     {
-      id: 1,
+      id: '1',
       title: 'title1',
       content: 'content1',
     },
     {
-      id: 2,
+      id: '2',
       title: 'title2',
       content: 'content2',
     },
     {
-      id: 3,
+      id: '3',
       title: 'title3',
       content: 'content3',
     },
@@ -34,7 +34,7 @@ export class BoardService {
     return this.boards;
   }
 
-  find(id: number) {
+  find(id: string) {
     const board = this.getOneBoard(id);
 
     if (!board) return 'not found';
@@ -50,7 +50,7 @@ export class BoardService {
     return newBoard;
   }
 
-  update(id: number, body: UpdateBoardDto) {
+  update(id: string, body: UpdateBoardDto) {
     const index = this.getBoardIndex(id);
 
     if (index === -1) return 'not found';
@@ -63,7 +63,7 @@ export class BoardService {
     return this.boards[index];
   }
 
-  remove(id: number) {
+  remove(id: string) {
     const index = this.getBoardIndex(id);
 
     if (index === -1) return 'not found';
@@ -74,16 +74,16 @@ export class BoardService {
 
   // 다음 id 구하기
   getNextId() {
-    return this.boards.length + 1;
+    return String(this.boards.length + 1);
   }
 
   // id로 게시글 인덱스 찾기
-  getBoardIndex(id: number) {
+  getBoardIndex(id: string) {
     return this.boards.findIndex((board) => board.id === id);
   }
 
   // id로 게시글 찾기
-  getOneBoard(id: number) {
+  getOneBoard(id: string) {
     return this.boards.find((board) => board.id === id);
   }
 }
