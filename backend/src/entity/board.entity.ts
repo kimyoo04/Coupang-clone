@@ -32,6 +32,6 @@ export class Board {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.boards) // Many-to-One 관계 설정
-  @JoinColumn({ name: 'user_id' }) // 외래키를 'user_id' 컬럼에 지정
+  @JoinColumn({ name: 'userId' }) // 외래키를 'userId' 컬럼에 지정
   user: User; // User 엔티티와의 관계를 나타내는 필드
 }

@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { Board } from '@/entity/board.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BoardService {
+  constructor(
+    @InjectRepository(Board)
+    private readonly boardRepository: Repository<Board>,
+  ) {}
+
   private boards = [
     {
       id: 1,
