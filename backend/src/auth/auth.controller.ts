@@ -1,18 +1,23 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiPostResponse } from 'src/common/decorator/swagger.decorator';
 import { SigninReqDto, SignupReqDto } from './dto/req.dto';
 import { AuthService } from './auth.service';
+import { SigninResDto, SignupResDto } from './dto/res.dto';
 
 @ApiTags('Auth')
+@ApiExtraModels(SignupResDto, SigninResDto)
 @Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiPostResponse(SignupResDto)
   @Post('signup')
   async signup(@Body() signupReqDto: SignupReqDto) {
     return this.authService.signup('email', 'password');
   }
 
+  @ApiPostResponse(SigninResDto)
   @Post('signin')
   async signin(@Body() signinReqDto: SigninReqDto) {
     return this.authService.signin({});
