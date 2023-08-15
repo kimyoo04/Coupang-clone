@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBoardDto } from './dto/create-board.dto';
-import { UpdateBoardDto } from './dto/update-board.dto';
 import { Board } from '@/entity/board.entity';
+import { CreateBoardReqDto, UpdateBoardReqDto } from './dto/req.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -41,7 +40,7 @@ export class BoardService {
     return board;
   }
 
-  create(body: CreateBoardDto) {
+  create(body: CreateBoardReqDto) {
     const newBoard = {
       id: this.getNextId(),
       ...body,
@@ -50,7 +49,7 @@ export class BoardService {
     return newBoard;
   }
 
-  update(id: string, body: UpdateBoardDto) {
+  update(id: string, body: UpdateBoardReqDto) {
     const index = this.getBoardIndex(id);
 
     if (index === -1) return 'not found';

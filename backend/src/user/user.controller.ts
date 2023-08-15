@@ -10,8 +10,8 @@ import { FindUserResDto } from './dto/res.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiGetResponse(FindUserResDto)
   @Get(':id')
+  @ApiGetResponse(FindUserResDto)
   findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }

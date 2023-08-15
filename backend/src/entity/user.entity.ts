@@ -13,7 +13,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class User {
   // @PrimaryColumn('uuid', { default: uuidv4() }) // 기본값으로 UUID를 생성
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @ApiProperty({ description: '이름' })
   @Column()
