@@ -6,18 +6,25 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
+  Query,
   ValidationPipe,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
-import { ApiTags } from '@nestjs/swagger';
-import { CreateBoardDto } from './dto/create-board.dto';
-import { UpdateBoardDto } from './dto/update-board.dto';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { PageReqDto } from '@/common/dto/req.dto';
+import {
+  CreateBoardReqDto,
+  FindBoardReqDto,
+  UpdateBoardReqDto,
+} from './dto/req.dto';
+import { ApiGetResponse } from '@/common/decorator/swagger.decorator';
+import { FindBoardResDto } from './dto/res.dto';
 
-@Controller('board')
 @ApiTags('Board')
+@ApiExtraModels(FindBoardResDto)
+@Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
@@ -27,30 +34,31 @@ export class BoardController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query() { page }: PageReqDto) {
     return this.boardService.findAll();
   }
 
   @Get(':id')
-  find(@Param('id', ParseIntPipe) id: number) {
+  @ApiGetResponse(FindBoardResDto)
+  find(@Param('id') { id }: FindBoardReqDto) {
     return this.boardService.find(id);
   }
 
   @Post()
-  create(@Body(new ValidationPipe()) body: CreateBoardDto) {
+  create(@Body(new ValidationPipe()) body: CreateBoardReqDto) {
     return this.boardService.create(body);
   }
 
   @Put(':id')
   update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) body: UpdateBoardDto,
+    @Param('id') { id }: FindBoardReqDto,
+    @Body(new ValidationPipe()) body: UpdateBoardReqDto,
   ) {
     return this.boardService.update(id, body);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id') { id }: FindBoardReqDto) {
     return this.boardService.remove(id);
   }
 }

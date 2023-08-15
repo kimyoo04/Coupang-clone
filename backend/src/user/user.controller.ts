@@ -1,34 +1,18 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { ApiGetResponse } from '@/common/decorator/swagger.decorator';
+import { FindUserResDto } from './dto/res.dto';
 
-@Controller('users')
+@ApiTags('User')
+@ApiExtraModels(FindUserResDto)
+@Controller('api/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('/oauth')
-  async createUserFromOAuth(@Body() requestBody: any) {
-    const { oauthProvider, oauthId, email, name, profilePictureUrl } =
-      requestBody;
-
-    if (!oauthProvider || !oauthId || !email || !name || !profilePictureUrl) {
-      throw new BadRequestException('Missing required fields.');
-    }
-
-    try {
-      const user = await this.userService.createOrUpdateUserFromOAuth(
-        oauthProvider,
-        oauthId,
-        email,
-        name,
-        profilePictureUrl,
-      );
-
-      return {
-        message: 'User created/updated successfully',
-        user,
-      };
-    } catch (error) {
-      throw new BadRequestException('Failed to create/update user.');
-    }
+  @Get(':id')
+  @ApiGetResponse(FindUserResDto)
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(id);
   }
 }
