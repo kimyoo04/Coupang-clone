@@ -1,8 +1,9 @@
 export default () => ({
   ENVIRONMENT: process.env.ENVIRONMENT || 'development',
-  DB_PORT: process.env.DB_PORT || 5432,
-  DB_HOST: process.env.DB_HOST || 'localhost',
-  DB_DATABASE: process.env.DB_DATABASE || 'postgres',
-  DB_USERNAME: process.env.DB_USERNAME || 'postgres',
-  DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
+  POSTGRES_PORT: process.env.POSTGRES_PORT || 5432,
+  POSTGRES_HOST: process.env.POSTGRES_HOST || 'localhost',
+  POSTGRES_DATABASE: process.env.POSTGRES_DATABASE || 'postgres',
+  POSTGRES_USERNAME: process.env.POSTGRES_USERNAME || 'postgres',
+  POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD || 'postgres',
+  JWT_SECRET: process.env.JWT_SECRET || 'jwt_secret_kimyoo',
 });
