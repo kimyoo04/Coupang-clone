@@ -24,11 +24,11 @@ export class Board {
   content: string;
 
   @ApiProperty({ description: '생성일' })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({ description: '수정일' })
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.boards) // Many-to-One 관계 설정

@@ -12,7 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { PageReqDto } from '@/common/dto/req.dto';
 import {
   CreateBoardReqDto,
@@ -28,27 +28,26 @@ import { FindBoardResDto } from './dto/res.dto';
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
-  @Get('exception')
-  exception() {
-    throw new HttpException('Not Found Exception', HttpStatus.NOT_FOUND);
-  }
-
+  @ApiBearerAuth()
   @Get()
   findAll(@Query() { page }: PageReqDto) {
     return this.boardService.findAll();
   }
 
-  @Get(':id')
+  @ApiBearerAuth()
   @ApiGetResponse(FindBoardResDto)
+  @Get(':id')
   find(@Param('id') { id }: FindBoardReqDto) {
     return this.boardService.find(id);
   }
 
+  @ApiBearerAuth()
   @Post()
   create(@Body(new ValidationPipe()) body: CreateBoardReqDto) {
     return this.boardService.create(body);
   }
 
+  @ApiBearerAuth()
   @Put(':id')
   update(
     @Param('id') { id }: FindBoardReqDto,
@@ -57,6 +56,7 @@ export class BoardController {
     return this.boardService.update(id, body);
   }
 
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') { id }: FindBoardReqDto) {
     return this.boardService.remove(id);

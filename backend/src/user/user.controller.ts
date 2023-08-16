@@ -1,8 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { ApiGetResponse } from '@/common/decorator/swagger.decorator';
 import { FindUserResDto } from './dto/res.dto';
+import { User, UserAfterAuth } from '@/common/decorator/user.decorator';
 
 @ApiTags('User')
 @ApiExtraModels(FindUserResDto)
@@ -10,9 +11,11 @@ import { FindUserResDto } from './dto/res.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
+  @ApiBearerAuth()
   @ApiGetResponse(FindUserResDto)
-  findOne(@Param('id') id: string) {
+  @Get(':id')
+  findOne(@Param('id') id: string, @User() user: UserAfterAuth) {
+    console.log(user); // custom param decorator
     return this.userService.findOne(id);
   }
 }

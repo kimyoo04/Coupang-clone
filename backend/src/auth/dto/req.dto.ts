@@ -50,13 +50,6 @@ export class SignupReqDto {
   passwordConfirm: string;
 
   @ApiProperty({
-    required: true,
-    example: true,
-    description: '이메일 인증 여부',
-  })
-  emailVerified: boolean;
-
-  @ApiProperty({
     required: false,
     example: 'kjqdklsdjqpoczxc1wk-10wdk',
     description: '이메일 인증 토큰',
