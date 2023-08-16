@@ -1,5 +1,5 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { ApiPostResponse } from 'src/common/decorator/swagger.decorator';
 import { SigninReqDto, SignupReqDto } from './dto/req.dto';
 import { AuthService } from './auth.service';
@@ -12,10 +12,9 @@ import { Public } from '@/common/decorator/public.decorator';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Public()
-  @ApiBearerAuth()
-  @ApiPostResponse(SignupResDto)
   @Post('signup')
+  @ApiPostResponse(SignupResDto)
+  @Public()
   async signup(
     @Body() { name, email, password, passwordConfirm }: SignupReqDto,
   ) {
@@ -27,7 +26,6 @@ export class AuthController {
   }
 
   @Public()
-  @ApiBearerAuth()
   @ApiPostResponse(SigninResDto)
   @Post('signin')
   async signin(@Body() { email, password }: SigninReqDto) {
@@ -35,7 +33,6 @@ export class AuthController {
   }
 
   @Public()
-  @ApiBearerAuth()
   @Post('/oauth')
   async createUserFromOAuth(@Body() requestBody: any) {
     const { oauthProvider, oauthId, email, name, profilePictureUrl } =
