@@ -1,5 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerCustomOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,10 +17,18 @@ async function bootstrap() {
     .setTitle('Coupang-clone API')
     .setDescription('Coupang-clone description')
     .setVersion('1.0')
-    .addTag('Board')
+    .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+
+  const customOptions: SwaggerCustomOptions = {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  };
+
+  SwaggerModule.setup('docs', app, document, customOptions);
 
   // ValidationPipe 전역 적용
   app.useGlobalPipes(
@@ -26,6 +38,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(8000);
+  const port = 8000;
+  await app.listen(port);
+  console.info(`listening on port ${port}`);
 }
 bootstrap();
