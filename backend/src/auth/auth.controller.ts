@@ -1,9 +1,10 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { ApiPostResponse } from 'src/common/decorator/swagger.decorator';
 import { SigninReqDto, SignupReqDto } from './dto/req.dto';
 import { AuthService } from './auth.service';
 import { SigninResDto, SignupResDto } from './dto/res.dto';
+import { Public } from '@/common/decorator/public.decorator';
 
 @ApiTags('Auth')
 @ApiExtraModels(SignupResDto, SigninResDto)
@@ -11,18 +12,30 @@ import { SigninResDto, SignupResDto } from './dto/res.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
+  @ApiBearerAuth()
   @ApiPostResponse(SignupResDto)
   @Post('signup')
-  async signup(@Body() signupReqDto: SignupReqDto) {
-    return this.authService.signup('email', 'password');
+  async signup(
+    @Body() { name, email, password, passwordConfirm }: SignupReqDto,
+  ) {
+    if (password !== passwordConfirm) {
+      throw new BadRequestException('Passwords do not match.');
+    }
+    const { id } = await this.authService.signup(name, email, password);
+    return id;
   }
 
+  @Public()
+  @ApiBearerAuth()
   @ApiPostResponse(SigninResDto)
   @Post('signin')
-  async signin(@Body() signinReqDto: SigninReqDto) {
-    return this.authService.signin({});
+  async signin(@Body() { email, password }: SigninReqDto) {
+    return this.authService.signin(email, password);
   }
 
+  @Public()
+  @ApiBearerAuth()
   @Post('/oauth')
   async createUserFromOAuth(@Body() requestBody: any) {
     const { oauthProvider, oauthId, email, name, profilePictureUrl } =
