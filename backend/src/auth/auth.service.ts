@@ -1,3 +1,4 @@
+import { RefreshToken } from './../entity/refresh-token.entity';
 import { UserService } from 'src/user/user.service';
 import {
   BadRequestException,
@@ -14,6 +15,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(RefreshToken)
+    private refreshTokenRepository: Repository<RefreshToken>,
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
@@ -37,9 +40,26 @@ export class AuthService {
     if (!isMatch)
       throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
+    const refreshToken = this.generateRefreshToken(user.id);
+    await this.createRefreshTokenUsingUser(user.id, refreshToken);
     return {
-      accessToken: this.jwtService.sign({ sub: user.id }),
+      accessToken: this.generateAccesToken(user.id),
+      refreshToken,
     };
+  }
+
+  async refresh(token: string, userId: string) {
+    const refreshTokenEntity = await this.refreshTokenRepository.findOneBy({
+      token,
+    });
+    if (!refreshTokenEntity) {
+      throw new UnauthorizedException('유효하지 않은 리프레시 토큰입니다.');
+    }
+    const accessToken = this.generateAccesToken(userId);
+    const refreshToken = this.generateRefreshToken(userId);
+    refreshTokenEntity.token = refreshToken;
+    await this.refreshTokenRepository.save(refreshTokenEntity);
+    return { accessToken, refreshToken };
   }
 
   async createOrUpdateUserFromOAuth(
@@ -66,5 +86,36 @@ export class AuthService {
     user.profilePictureUrl = profilePictureUrl;
 
     return await this.userRepository.save(user);
+  }
+
+  private generateAccesToken(userId: string) {
+    const payload = { sub: userId, tokenType: 'access' };
+    return this.jwtService.sign(payload, { expiresIn: '1d' });
+  }
+
+  private generateRefreshToken(userId: string) {
+    const payload = { sub: userId, tokenType: 'refresh' };
+    return this.jwtService.sign(payload, { expiresIn: '7d' });
+  }
+
+  private async createRefreshTokenUsingUser(
+    userId: string,
+    refreshToken: string,
+  ) {
+    let refreshTokenEntity = await this.refreshTokenRepository.findOneBy({
+      user: { id: userId },
+    });
+
+    if (!refreshTokenEntity) {
+      // 새로운 리프레시 토큰이라면 엔티티 생성
+      refreshTokenEntity = this.refreshTokenRepository.create({
+        user: { id: userId },
+        token: refreshToken,
+      });
+    } else {
+      // 이미 존재하는 리프레시 토큰이라면 토큰만 업데이트
+      refreshTokenEntity.token = refreshToken;
+    }
+    await this.refreshTokenRepository.save(refreshTokenEntity);
   }
 }
