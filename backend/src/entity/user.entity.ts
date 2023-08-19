@@ -8,6 +8,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Board } from './board.entity';
 import { RefreshToken } from './refresh-token.entity';
+import { Role } from '@/user/enum/user.enum';
 
 @Entity()
 export class User {
@@ -26,6 +27,9 @@ export class User {
   @ApiProperty({ description: '비밀번호' })
   @Column()
   password: string;
+
+  @Column({ type: 'enum', enum: Role })
+  role: Role = Role.User; // 기본값으로 USER를 할당
 
   @ApiProperty({ description: '이메일 인증 여부' })
   @Column({ default: false })
