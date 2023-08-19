@@ -2,9 +2,12 @@ import { ROLES_KEY } from '@/common/decorator/role.decorator';
 import { Role } from '@/user/enum/user.enum';
 import { UserService } from '@/user/user.service';
 import {
+  Inject,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  Logger,
+  LoggerService,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -18,6 +21,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     private reflector: Reflector,
     private jwtService: JwtService,
     private userService: UserService,
+    @Inject(Logger) private logger: LoggerService,
   ) {
     super();
   }
@@ -39,8 +43,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     // refresh route 외에 refresh Token 으로 요청 시 에러 처리
     if (url !== '/api/auth/refresh' && decoded['tokenType'] === 'refresh') {
-      console.error('Access Token is required');
-      throw new UnauthorizedException();
+      const error = new UnauthorizedException('Access Token is required');
+      this.logger.error(error.message, error.stack); // 에러 스텍 확인
+      throw error;
     }
 
     // Roles 데코레이터가 있는지 확인

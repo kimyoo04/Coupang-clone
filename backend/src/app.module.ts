@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 import { BoardModule } from './board/board.module';
 import { LoggingMiddleware } from './middleware/logging-middleware';
@@ -47,6 +47,7 @@ import envConfig from './config/env.config';
     BoardModule,
     UserModule,
   ],
+  providers: [Logger],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

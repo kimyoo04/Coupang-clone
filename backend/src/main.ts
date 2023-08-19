@@ -6,10 +6,26 @@ import {
 } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import { WinstonModule, utilities } from 'nest-winston';
+import * as winston from 'winston';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const port = 8000;
+  const app = await NestFactory.create(AppModule, {
+    // nestjs logger에 winston 적용
+    logger: WinstonModule.createLogger({
+      transports: [
+        new winston.transports.Console({
+          level: process.env.STAGE === 'prod' ? 'info' : 'debug',
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            utilities.format.nestLike('Nestjs', { prettyPrint: true }),
+          ),
+        }),
+      ],
+    }),
+  });
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
@@ -38,8 +54,8 @@ async function bootstrap() {
     }),
   );
 
-  const port = 8000;
   await app.listen(port);
-  console.info(`listening on port ${port}`);
+  Logger.log(`listening on port ${port}`);
+  Logger.log(`STAGE: ${process.env.STAGE}`);
 }
 bootstrap();
