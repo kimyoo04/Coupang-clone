@@ -1,3 +1,6 @@
+import { ROLES_KEY } from '@/common/decorator/role.decorator';
+import { Role } from '@/user/enum/user.enum';
+import { UserService } from '@/user/user.service';
 import {
   ExecutionContext,
   Injectable,
@@ -14,6 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {
     super();
   }
@@ -37,6 +41,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (url !== '/api/auth/refresh' && decoded['tokenType'] === 'refresh') {
       console.error('Access Token is required');
       throw new UnauthorizedException();
+    }
+
+    // Roles 데코레이터가 있는지 확인
+    const requireRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    // Roles 데코레이터가 있으면 Admin 권한이 있는지 확인
+    if (requireRoles) {
+      const userId = decoded['sub'];
+      return this.userService.checkUserIsAdmin(userId);
     }
 
     return super.canActivate(context);
