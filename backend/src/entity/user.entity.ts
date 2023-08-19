@@ -1,10 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Board } from './board.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Board } from './board.entity';
+import { RefreshToken } from './refresh-token.entity';
+import { Role } from '@/user/enum/user.enum';
 
-@Entity({ name: 'user' })
+@Entity()
 export class User {
-  // @PrimaryColumn('uuid', { default: uuidv4() }) // 기본값으로 UUID를 생성
+  // @PrimaryColumn('uuid', { default: uuid v4() }) // 기본값으로 UUID를 생성
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -19,6 +27,9 @@ export class User {
   @ApiProperty({ description: '비밀번호' })
   @Column()
   password: string;
+
+  @Column({ type: 'enum', enum: Role })
+  role: Role = Role.User; // 기본값으로 USER를 할당
 
   @ApiProperty({ description: '이메일 인증 여부' })
   @Column({ default: false })
@@ -39,4 +50,7 @@ export class User {
   // Board와의 One-to-Many 관계 설정
   @OneToMany(() => Board, (board) => board.user)
   boards: Board[]; // User 엔티티와의 관계를 나타내는 필드
+
+  @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshToken: RefreshToken;
 }

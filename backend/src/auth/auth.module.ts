@@ -10,12 +10,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { RefreshToken } from '@/entity/refresh-token.entity';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([RefreshToken]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (

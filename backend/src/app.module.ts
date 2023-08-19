@@ -7,15 +7,17 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import postgresConfig from './config/postgres.config';
 import jwtConfig from './config/jwt.config';
+import envConfig from './config/env.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [postgresConfig, jwtConfig],
+      load: [postgresConfig, jwtConfig, envConfig],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -29,8 +31,8 @@ import jwtConfig from './config/jwt.config';
           password: configService.get('postgres.password'),
           autoLoadEntities: true,
         };
-        // 주의! development 환경에서만 개발 편의성을 위해 활용
-        if (configService.get('NODE_ENV') === 'development') {
+        // 주의! development 환경에서만 db 활용
+        if (configService.get('ENVIRONMENT') === 'development') {
           console.info('Sync TypeORM');
           obj = Object.assign(obj, {
             synchronize: true,
