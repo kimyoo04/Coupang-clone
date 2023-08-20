@@ -12,7 +12,7 @@
     "start:dev": "SET STAGE=local && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --dataSource ./src/database/data-source.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/ormconfig.ts",
     "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create ./src/database/migrations/Migration",
     "migration:generate": "yarn typeorm migration:generate ./src/database/migrations/Migration",
     "migration:run": "yarn typeorm  migration:run",

@@ -30,12 +30,12 @@ import envConfig from './config/env.config';
           username: configService.get('postgres.username'),
           password: configService.get('postgres.password'),
           autoLoadEntities: true,
+          synchronize: false,
         };
         // 주의! development 환경에서만 db 활용
         if (configService.get('ENVIRONMENT') === 'development') {
           console.info('Sync TypeORM');
           obj = Object.assign(obj, {
-            synchronize: true,
             logging: true,
           });
         }
