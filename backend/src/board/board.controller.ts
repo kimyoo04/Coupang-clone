@@ -3,12 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
@@ -21,9 +20,12 @@ import {
 } from './dto/req.dto';
 import { ApiGetResponse } from '@/common/decorator/swagger.decorator';
 import { FindBoardResDto } from './dto/res.dto';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { ThrottlerBehindProxyGuard } from '@/common/guard/throttler-behind-proxy.guard';
 
 @ApiTags('Board')
 @ApiExtraModels(FindBoardResDto)
+@UseGuards(ThrottlerBehindProxyGuard)
 @Controller('board')
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
@@ -36,12 +38,14 @@ export class BoardController {
 
   @ApiBearerAuth()
   @ApiGetResponse(FindBoardResDto)
+  @SkipThrottle() // ThrottlerGuard를 거치지 않음
   @Get(':id')
   find(@Param('id') { id }: FindBoardReqDto) {
     return this.boardService.find(id);
   }
 
   @ApiBearerAuth()
+  @Throttle(3, 60) // 60초에 3번 요청 가능
   @Post()
   create(@Body(new ValidationPipe()) body: CreateBoardReqDto) {
     return this.boardService.create(body);

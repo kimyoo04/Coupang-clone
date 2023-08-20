@@ -13,9 +13,14 @@ import postgresConfig from './config/postgres.config';
 import jwtConfig from './config/jwt.config';
 import envConfig from './config/env.config';
 import swaggerConfig from './config/swagger.config';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 60, // 60초
+      limit: 10, // 10번
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [postgresConfig, jwtConfig, envConfig, swaggerConfig],
