@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@/entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,10 +19,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    return null;
-  }
-
   async signup(name: string, email: string, password: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -32,9 +29,18 @@ export class AuthService {
       const user = await this.userService.findOneByEmail(email);
       if (user) throw new UnauthorizedException('이미 존재하는 이메일입니다.');
 
-      const userEntity = this.userRepository.create({ name, email, password });
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      const userEntity = this.userRepository.create({
+        name,
+        email,
+        password: hashedPassword,
+      });
       await queryRunner.manager.save(userEntity);
+
       const accessToken = this.generateAccesToken(userEntity.id);
+
       const refreshToken = this.generateRefreshToken(userEntity.id);
       const refreshTokenEntity = this.refreshTokenRepository.create({
         user: { id: userEntity.id },
@@ -42,6 +48,7 @@ export class AuthService {
       });
       await queryRunner.manager.save(refreshTokenEntity);
       await queryRunner.commitTransaction(); // 트랜잭션 내용 저장
+
       return { id: userEntity.id, accessToken, refreshToken };
     } catch (e) {
       await queryRunner.rollbackTransaction(); // 트랜잭션 롤백
@@ -53,15 +60,11 @@ export class AuthService {
   }
 
   async signin(email: string, password: string) {
-    const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new UnauthorizedException('존재하지 않는 이메일입니다.');
-
-    const isMatch = password === user.password;
-    if (!isMatch)
-      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+    const user = await this.validateUser(email, password);
 
     const refreshToken = this.generateRefreshToken(user.id);
     await this.createRefreshTokenUsingUser(user.id, refreshToken);
+
     return {
       accessToken: this.generateAccesToken(user.id),
       refreshToken,
@@ -137,5 +140,16 @@ export class AuthService {
       refreshTokenEntity.token = refreshToken;
     }
     await this.refreshTokenRepository.save(refreshTokenEntity);
+  }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) throw new UnauthorizedException('존재하지 않는 이메일입니다.');
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+
+    return user;
   }
 }

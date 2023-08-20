@@ -33,7 +33,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const stage = configService.get<string>('STAGE');
 
-  const SWAGGER_ENVS = ['local ', 'dev'];
+  const SWAGGER_ENVS = ['local', 'dev'];
   if (SWAGGER_ENVS.includes(stage)) {
     console.log('swagger enabled');
 
