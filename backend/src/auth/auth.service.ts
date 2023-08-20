@@ -1,13 +1,9 @@
 import { RefreshToken } from './../entity/refresh-token.entity';
 import { UserService } from 'src/user/user.service';
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@/entity/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -17,6 +13,7 @@ export class AuthService {
     private userRepository: Repository<User>,
     @InjectRepository(RefreshToken)
     private refreshTokenRepository: Repository<RefreshToken>,
+    private dataSource: DataSource,
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
@@ -26,10 +23,33 @@ export class AuthService {
   }
 
   async signup(name: string, email: string, password: string) {
-    const user = await this.userService.findOneByEmail(email);
-    if (user) throw new BadRequestException('이미 존재하는 이메일입니다.');
-    const newUser = await this.userService.create(name, email, password);
-    return newUser;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let error;
+
+    try {
+      const user = await this.userService.findOneByEmail(email);
+      if (user) throw new UnauthorizedException('이미 존재하는 이메일입니다.');
+
+      const userEntity = this.userRepository.create({ name, email, password });
+      await queryRunner.manager.save(userEntity);
+      const accessToken = this.generateAccesToken(userEntity.id);
+      const refreshToken = this.generateRefreshToken(userEntity.id);
+      const refreshTokenEntity = this.refreshTokenRepository.create({
+        user: { id: userEntity.id },
+        token: refreshToken,
+      });
+      await queryRunner.manager.save(refreshTokenEntity);
+      await queryRunner.commitTransaction(); // 트랜잭션 내용 저장
+      return { id: userEntity.id, accessToken, refreshToken };
+    } catch (e) {
+      await queryRunner.rollbackTransaction(); // 트랜잭션 롤백
+      error = e;
+    } finally {
+      await queryRunner.release(); // 쿼리 러너 해제
+      if (error) throw error;
+    }
   }
 
   async signin(email: string, password: string) {

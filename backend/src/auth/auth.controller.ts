@@ -28,7 +28,11 @@ export class AuthController {
     if (password !== passwordConfirm) {
       throw new BadRequestException('Passwords do not match.');
     }
-    const { id } = await this.authService.signup(name, email, password);
+    const { id, accessToken, refreshToken } = await this.authService.signup(
+      name,
+      email,
+      password,
+    );
     return id;
   }
 
